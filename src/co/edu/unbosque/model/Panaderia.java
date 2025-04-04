@@ -34,6 +34,10 @@ public class Panaderia {
 		
 	}
 	
+	public ProductoDTO buscarPorNombre(String nombre) {
+		return null;
+	}
+	
 	public List<ProductoDTO> filtrarPorNombre(String nombre){
 		return null;
 	}

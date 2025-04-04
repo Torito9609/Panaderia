@@ -16,13 +16,13 @@ public class PanaderiaDAO implements IPanaderiaDAO<Producto>{
 	}
 
 	@Override
-	public boolean add(Producto x) {
+	public boolean add(Producto producto) {
 		// TODO Auto-generated method stub
 		return false;
 	}
 
 	@Override
-	public boolean delete(Producto x) {
+	public boolean delete(Producto producto) {
 		// TODO Auto-generated method stub
 		return false;
 	}
@@ -64,7 +64,13 @@ public class PanaderiaDAO implements IPanaderiaDAO<Producto>{
 	public void setProductos(List<Producto> productos) {
 		this.productos = productos;
 	}
-	
-	
+
+	public Archivo getArchivo() {
+		return archivo;
+	}
+
+	public void setArchivo(Archivo archivo) {
+		this.archivo = archivo;
+	}
 
 }
