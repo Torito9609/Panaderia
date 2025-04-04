@@ -23,4 +23,10 @@ public class Archivo {
 	public List<Producto> cargar() throws ExcepcionAccesoDatos {
 		return null;
 	}
+
+	public File getUbicacionArchivo() {
+		return ubicacionArchivo;
+	}
+	
+	
 }
