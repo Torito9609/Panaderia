@@ -24,17 +24,18 @@ public class VentanaPrincipal extends JFrame {
     }
 
     public void inicializarComponentes() {
-        panelBusqueda = new PanelBusqueda();
-        add(panelBusqueda, BorderLayout.NORTH);
-
-        panelLateral = new PanelLateral();
-        add(panelLateral, BorderLayout.WEST);
-
+    	panelBusqueda = new PanelBusqueda();
         panelTabla = new PanelTabla();
-        add(panelTabla, BorderLayout.CENTER);
-
         panelInferior = new PanelInferior();
-        add(panelInferior, BorderLayout.SOUTH);
+        panelLateral = new PanelLateral();
+
+        JPanel panelContenido = new JPanel(new BorderLayout());
+        panelContenido.add(panelBusqueda, BorderLayout.NORTH);
+        panelContenido.add(panelTabla, BorderLayout.CENTER);
+
+        add(panelLateral, BorderLayout.WEST);         
+        add(panelContenido, BorderLayout.CENTER);    
+        add(panelInferior, BorderLayout.SOUTH); 
     }
 
 	public PanelBusqueda getPanelBusqueda() {

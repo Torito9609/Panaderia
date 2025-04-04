@@ -5,87 +5,115 @@ import java.awt.*;
 
 public class PanelBusqueda extends JPanel {
 
-    private JComboBox<String> buscarPorComboBox, tipProductoComboBox;
+    private JComboBox<String> buscarPorComboBox;
     private JButton buscarButton;
     private JTextField buscarTextField;
-    private JLabel buscarPor, filtrar;
-    
+
+    private JComboBox<String> filtroComboBox;
+    private JComboBox<String> tipoProductoFiltroComboBox;
+    private JTextField cantidadMinimaField;
+    private JTextField precioMinimoField, precioMaximoField;
+
+    private JPanel panelFiltrosDinamico;
+
     public PanelBusqueda() {
-        setLayout(new FlowLayout(FlowLayout.LEFT, 10, 10));  
+        setLayout(new FlowLayout(FlowLayout.LEFT, 10, 10));
         setBackground(Color.LIGHT_GRAY);
-        
+
         inicializarComponentes();
     }
-    
-    public void inicializarComponentes() {
-    	buscarPorComboBox = new JComboBox<>(new String[]{"Seleccionar", "Nombre"});
-    	buscarPorComboBox.setActionCommand("BUSCAR_POR");
+
+    private void inicializarComponentes() {
+        buscarPorComboBox = new JComboBox<>(new String[]{"Nombre"});
+        buscarPorComboBox.setActionCommand("BUSCAR_POR");
+
         buscarTextField = new JTextField(20);
         buscarButton = new JButton("Buscar");
         buscarButton.setActionCommand("BUSCAR");
-        tipProductoComboBox = new JComboBox<>(new String[]{"Seleccionar", "Pan", "Galleta"});
-        tipProductoComboBox.setActionCommand("TIPO");
-        buscarPor = new JLabel("Buscar por:");
-        filtrar = new JLabel("Filtrar por:");
-        
-        add(buscarPor);
+
+        add(new JLabel("Buscar por:"));
         add(buscarPorComboBox);
         add(buscarTextField);
         add(buscarButton);
-        add(filtrar);
-        add(tipProductoComboBox);
+
+        filtroComboBox = new JComboBox<>(new String[]{"Seleccionar", "Tipo", "Cantidad", "Precio"});
+        filtroComboBox.setActionCommand("FILTRO_POR");
+
+        add(new JLabel("Filtrar por:"));
+        add(filtroComboBox);
+
+        panelFiltrosDinamico = new JPanel(new FlowLayout(FlowLayout.LEFT, 10, 10));
+        panelFiltrosDinamico.setOpaque(false);
+        add(panelFiltrosDinamico);
     }
-    
-    public void limpiar() {
-    	
+
+    public void mostrarFiltroPorTipo() {
+        panelFiltrosDinamico.removeAll();
+        tipoProductoFiltroComboBox = new JComboBox<>(new String[]{"Seleccionar", "Pan", "Galleta"});
+        tipoProductoFiltroComboBox.setActionCommand("FILTRO_TIPO");
+        panelFiltrosDinamico.add(tipoProductoFiltroComboBox);
+        recargarPanel();
     }
 
-	public JComboBox<String> getBuscarPorComboBox() {
-		return buscarPorComboBox;
-	}
+    public void mostrarFiltroPorCantidad() {
+        panelFiltrosDinamico.removeAll();
+        panelFiltrosDinamico.add(new JLabel("Cantidad mínima:"));
+        cantidadMinimaField = new JTextField(6);
+        panelFiltrosDinamico.add(cantidadMinimaField);
+        recargarPanel();
+    }
 
-	public void setBuscarPorComboBox(JComboBox<String> buscarPorComboBox) {
-		this.buscarPorComboBox = buscarPorComboBox;
-	}
+    public void mostrarFiltroPorPrecio() {
+        panelFiltrosDinamico.removeAll();
+        panelFiltrosDinamico.add(new JLabel("Precio mínimo:"));
+        precioMinimoField = new JTextField(6);
+        panelFiltrosDinamico.add(precioMinimoField);
 
-	public JComboBox<String> getTipoEmpleadoComboBox() {
-		return tipProductoComboBox;
-	}
+        panelFiltrosDinamico.add(new JLabel("Precio máximo:"));
+        precioMaximoField = new JTextField(6);
+        panelFiltrosDinamico.add(precioMaximoField);
+        recargarPanel();
+    }
 
-	public void setTipoEmpleadoComboBox(JComboBox<String> tipoEmpleadoComboBox) {
-		this.tipProductoComboBox = tipoEmpleadoComboBox;
-	}
+    public void limpiarFiltroDinamico() {
+        panelFiltrosDinamico.removeAll();
+        recargarPanel();
+    }
 
-	public JButton getBuscarButton() {
-		return buscarButton;
-	}
+    private void recargarPanel() {
+        panelFiltrosDinamico.revalidate();
+        panelFiltrosDinamico.repaint();
+    }
 
-	public void setBuscarButton(JButton buscarButton) {
-		this.buscarButton = buscarButton;
-	}
+    public JComboBox<String> getFiltroComboBox() {
+        return filtroComboBox;
+    }
 
-	public JTextField getBuscarTextField() {
-		return buscarTextField;
-	}
+    public JComboBox<String> getTipoProductoFiltroComboBox() {
+        return tipoProductoFiltroComboBox;
+    }
 
-	public void setBuscarTextField(JTextField buscarTextField) {
-		this.buscarTextField = buscarTextField;
-	}
+    public JTextField getCantidadMinimaField() {
+        return cantidadMinimaField;
+    }
 
-	public JLabel getBuscarPor() {
-		return buscarPor;
-	}
+    public JTextField getPrecioMinimoField() {
+        return precioMinimoField;
+    }
 
-	public void setBuscarPor(JLabel buscarPor) {
-		this.buscarPor = buscarPor;
-	}
+    public JTextField getPrecioMaximoField() {
+        return precioMaximoField;
+    }
 
-	public JLabel getFiltrar() {
-		return filtrar;
-	}
+    public JComboBox<String> getBuscarPorComboBox() {
+        return buscarPorComboBox;
+    }
 
-	public void setFiltrar(JLabel filtrar) {
-		this.filtrar = filtrar;
-	}
-    
+    public JTextField getBuscarTextField() {
+        return buscarTextField;
+    }
+
+    public JButton getBuscarButton() {
+        return buscarButton;
+    }
 }

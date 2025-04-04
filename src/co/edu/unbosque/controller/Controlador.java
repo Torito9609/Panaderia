@@ -28,7 +28,8 @@ public class Controlador implements ActionListener {
 
 	public void asignaOyentes() {
 		vista.getVentanaPrincipal().getPanelBusqueda().getBuscarButton().addActionListener(this);
-		vista.getVentanaPrincipal().getPanelBusqueda().getTipoEmpleadoComboBox().addActionListener(this);
+		vista.getVentanaPrincipal().getPanelBusqueda().getBuscarPorComboBox().addActionListener(this);
+		vista.getVentanaPrincipal().getPanelBusqueda().getFiltroComboBox().addActionListener(this);
 		vista.getVentanaPrincipal().getPanelInferior().getCrearButton().addActionListener(this);
 		vista.getVentanaPrincipal().getPanelInferior().getEditarButton().addActionListener(this);
 		vista.getVentanaPrincipal().getPanelInferior().getEliminarButton().addActionListener(this);
@@ -51,10 +52,28 @@ public class Controlador implements ActionListener {
 	public void actionPerformed(ActionEvent e) {
 		String comando = e.getActionCommand();
 
-		if (comando.equals("BUSCAR")) {
+		if (comando.equals("BUSCAR_POR")) {
+			System.out.println(comando);
+		}
+
+		else if (comando.equals("BUSCAR")) {
 			System.out.println(comando);
 
-		} else if (comando.equals("TIPO")) {
+		} else if (comando.equals("FILTRO_POR")) {
+			System.out.println(comando);
+			String seleccion = vista.getVentanaPrincipal().getPanelBusqueda().getFiltroComboBox().getSelectedItem()
+					.toString();
+			switch (seleccion) {
+			case "Tipo" -> {
+				vista.getVentanaPrincipal().getPanelBusqueda().mostrarFiltroPorTipo();
+				vista.getVentanaPrincipal().getPanelBusqueda().getTipoProductoFiltroComboBox().addActionListener(this);
+			}
+			case "Cantidad" -> vista.getVentanaPrincipal().getPanelBusqueda().mostrarFiltroPorCantidad();
+			case "Precio" -> vista.getVentanaPrincipal().getPanelBusqueda().mostrarFiltroPorPrecio();
+			default -> vista.getVentanaPrincipal().getPanelBusqueda().limpiarFiltroDinamico();
+			}
+
+		} else if (comando.equals("FILTRO_TIPO")) {
 			System.out.println(comando);
 
 		} else if (comando.equals("ELIMINAR_PRODUCTO")) {
@@ -75,6 +94,9 @@ public class Controlador implements ActionListener {
 			System.out.println(comando);
 
 		} else if (comando.equals("TIPO_PRODUCTO")) {
+			String tipoProducto = vista.getVentanaProducto().getPanelSuperior().getTipoProductoComboBox()
+					.getSelectedItem().toString();
+			vista.getVentanaProducto().getPanelDinamico().mostrarPanel(tipoProducto);
 			System.out.println(comando);
 
 		} else if (comando.equals("EDITAR")) {
@@ -98,9 +120,9 @@ public class Controlador implements ActionListener {
 	public void filtarPorNombreCoincidencia(String nombre) {
 
 	}
-	
+
 	public void filtrarPorNombreExacto(String nombre) {
-		
+
 	}
 
 	public void filtrarPorCantidad(int cantidad) {
