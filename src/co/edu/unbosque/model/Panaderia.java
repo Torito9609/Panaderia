@@ -25,7 +25,7 @@ public class Panaderia {
 
 	}
 
-	public void editarProducto(ProductoDTO productoEditar, ProductoDTO productoNuevo)
+	public void editarProducto(String NombreProductoEditar, ProductoDTO productoNuevo)
 			throws NombreProductoDuplicadoException, PrecioInvalidoException, CantidadInvalidaException {
 
 	}
@@ -34,7 +34,7 @@ public class Panaderia {
 		
 	}
 	
-	public ProductoDTO buscarPorNombre(String nombre) { // Retorna un producto exacto con coincidencia exacta
+	public ProductoDTO buscarPorNombre(String nombre) throws ProductoNoEncontradoException{ // Retorna un producto exacto con coincidencia exacta
 		return null;
 	}
 	
@@ -54,11 +54,11 @@ public class Panaderia {
 		
 	}
 	
-	public void cargarProductos() {
+	public void cargarProductos() { // cargar los productos
 		
 	}
 	
-	public void exportarProductosCSV() {
+	public void exportarProductosCSV() { // exportar productos CSV usando el método de la clase EcportadorCSV
 		
 	}
 
