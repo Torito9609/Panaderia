@@ -34,13 +34,13 @@ public class PanaderiaDAO implements IPanaderiaDAO<Producto>{
 	}
 
 	@Override
-	public Producto findByNombre(String nombre) {
+	public Producto findByNombre(String nombre) { // Retorna la coincidencia exacta
 		// TODO Auto-generated method stub
 		return null;
 	}
 
 	@Override
-	public List<Producto> filtrarPorNombre(String nombreParcial) {
+	public List<Producto> filtrarPorNombre(String nombreParcial) { // retorna una lista de coincidencias
 		// TODO Auto-generated method stub
 		return null;
 	}

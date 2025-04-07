@@ -5,9 +5,7 @@ import java.awt.*;
 
 public class PanelInferior extends JPanel {
 
-	private JButton crearButton;
-	private JButton editarButton;
-	private JButton eliminarButton;
+	private JButton crearButton, editarButton, eliminarButton;
 
 	public PanelInferior() {
 		setLayout(new FlowLayout(FlowLayout.RIGHT, 10, 10));
@@ -16,7 +14,7 @@ public class PanelInferior extends JPanel {
 		inicializarComponentes();
 	}
 
-	public void inicializarComponentes() {
+	private void inicializarComponentes() {
 		crearButton = new JButton("Crear nuevo producto");
 		crearButton.setActionCommand("CREAR_PRODUCTO");
 		add(crearButton);

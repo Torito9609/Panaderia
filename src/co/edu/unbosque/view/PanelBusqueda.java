@@ -5,15 +5,9 @@ import java.awt.*;
 
 public class PanelBusqueda extends JPanel {
 
-    private JComboBox<String> buscarPorComboBox;
+    private JComboBox<String> buscarPorComboBox, filtroComboBox, tipoProductoFiltroComboBox;
     private JButton buscarButton;
-    private JTextField buscarTextField;
-
-    private JComboBox<String> filtroComboBox;
-    private JComboBox<String> tipoProductoFiltroComboBox;
-    private JTextField cantidadMinimaField;
-    private JTextField precioMinimoField, precioMaximoField;
-
+    private JTextField buscarTextField, cantidadMinimaField, precioMinimoField, precioMaximoField;
     private JPanel panelFiltrosDinamico;
 
     public PanelBusqueda() {

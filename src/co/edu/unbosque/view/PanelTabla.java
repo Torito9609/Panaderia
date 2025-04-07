@@ -23,7 +23,7 @@ public class PanelTabla extends JPanel {
         inicializarComponentes();
     }
 
-    public void inicializarComponentes() {
+    private void inicializarComponentes() {
         String[] columnas = {"Nombre", "Tipo", "$ Venta", "$ Produccion", "Cantidad", "Queso", "Chispas"};
         
         modeloTabla = new DefaultTableModel(null, columnas) {

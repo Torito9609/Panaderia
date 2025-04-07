@@ -39,4 +39,6 @@ public class PanelGalleta extends JPanel {
     public void limpiar() {
         grupoChispas.clearSelection();
     }
+    
+    
 }

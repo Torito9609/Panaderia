@@ -20,7 +20,7 @@ public class Controlador implements ActionListener {
 		reiniciarTabla();
 	}
 
-	private void reiniciarTabla() {
+	public void reiniciarTabla() {
 		List<ProductoDTO> todosEmpleados = new ArrayList();
 		todosEmpleados = panaderia.listarProductos();
 		vista.getVentanaPrincipal().getPanelTabla().actualizarTabla(todosEmpleados);

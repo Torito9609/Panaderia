@@ -14,7 +14,7 @@ public class PanelLateral extends JPanel {
         inicializarComponentes();
     }
 
-    public void inicializarComponentes() {
+    private void inicializarComponentes() {
         ImageIcon icono = new ImageIcon(getClass().getClassLoader().getResource("imagenes/logo.png"));
         Image imgEscalada = icono.getImage().getScaledInstance(100, 100, Image.SCALE_SMOOTH);
         JLabel logoLabel = new JLabel(new ImageIcon(imgEscalada));
