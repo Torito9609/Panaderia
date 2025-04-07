@@ -70,5 +70,4 @@ public abstract class Producto {
 	    return nombre.equalsIgnoreCase(producto.nombre);
 	}
 
-
 }

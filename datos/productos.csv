@@ -1,0 +1,2 @@
+Nombre,PrecioVenta,CostoProduccion,Cantidad,Tipo,ConQueso,ConChispas
+Pan hojaldrado,600,00,200,00,250,Pan,false,false\nPan Bagguette ,3000,00,1500,00,60,Pan,true,false\nGalleta de Avena,2000,00,1500,00,60,Galleta,false,false\nCampesino,3000,00,1500,00,60,Pan,true,false\nGalleta de chispas,1500,00,1000,00,60,Galleta,false,true\nPan Rico,5000,00,2500,00,100,Pan,true,false\n

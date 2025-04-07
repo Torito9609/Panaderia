@@ -19,17 +19,25 @@ public class Archivo {
 	private final File ubicacionArchivo = new File(ConstanteArchivo.ARCHIVO_PRODUCTOS);
 
 	public Archivo() throws AccesoDatosException {
-		if (!ubicacionArchivo.exists()) {
-			try {
-				if (!ubicacionArchivo.createNewFile()) {
-					throw new AccesoDatosException("No se pudo crear el archivo");
-				}
-			} catch (IOException ex) {
-				throw new AccesoDatosException("Error al cargar el archivo de datos", ex);
-			}
-		}
+	    try {
+	        File parentDir = ubicacionArchivo.getParentFile();
+	        if (parentDir != null && !parentDir.exists()) {
+	            if (!parentDir.mkdirs()) {
+	                throw new AccesoDatosException("No se pudo crear el directorio para el archivo.");
+	            }
+	        }
 
+	        if (!ubicacionArchivo.exists()) {
+	            if (!ubicacionArchivo.createNewFile()) {
+	                throw new AccesoDatosException("No se pudo crear el archivo");
+	            }
+	        }
+
+	    } catch (IOException ex) {
+	        throw new AccesoDatosException("Error al cargar el archivo de datos", ex);
+	    }
 	}
+
 
 	public void guardar(List<Producto> productos) throws AccesoDatosException {
 		try {

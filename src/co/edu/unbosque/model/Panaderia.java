@@ -1,5 +1,6 @@
 package co.edu.unbosque.model;
 
+import java.io.IOException;
 import java.util.List;
 
 import co.edu.unbosque.model.dao.PanaderiaDAO;
@@ -42,7 +43,7 @@ public class Panaderia {
 
 	public void editarProducto(String nombreProductoEditar, ProductoDTO productoNuevo)
 			throws NombreProductoDuplicadoException, PrecioInvalidoException, CantidadInvalidaException,
-			TipoProductoInvalidoException, NombreProductoInvalidoException {
+			TipoProductoInvalidoException, NombreProductoInvalidoException, AccesoDatosException, IOException {
 
 		Producto productoConMismoNombre = panaderiaDAO.findByNombre(productoNuevo.getNombre());
 		if (productoConMismoNombre != null && !productoConMismoNombre.getNombre().equals(nombreProductoEditar)) {
@@ -54,12 +55,12 @@ public class Panaderia {
 
 	}
 
-	public void eliminarProducto(String nombre) throws ProductoNoEncontradoException {
+	public void eliminarProducto(String nombre) throws ProductoNoEncontradoException, AccesoDatosException, IOException {
 		Producto producto = panaderiaDAO.findByNombre(nombre);
 		if (producto == null) {
 			throw new ProductoNoEncontradoException("Producto no encontrado.");
 		}
-		panaderiaDAO.delete(producto);
+		panaderiaDAO.delete(producto.getNombre());
 	}
 
 	public ProductoDTO buscarPorNombre(String nombre) throws ProductoNoEncontradoException {

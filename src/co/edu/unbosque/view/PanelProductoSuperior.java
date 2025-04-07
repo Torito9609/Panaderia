@@ -1,6 +1,9 @@
 package co.edu.unbosque.view;
 
 import javax.swing.*;
+
+import co.edu.unbosque.model.dto.ProductoDTO;
+
 import java.awt.*;
 
 public class PanelProductoSuperior extends JPanel {
@@ -16,7 +19,6 @@ public class PanelProductoSuperior extends JPanel {
 	private void inicializarComponentes() {
 		add(new JLabel("Nombre:"));
 		nombreField = new JTextField(20);
-		nombreField.setEditable(false);
 		add(nombreField);
 
 		add(new JLabel("Precio de Venta:"));
@@ -47,13 +49,21 @@ public class PanelProductoSuperior extends JPanel {
 	
 	public String[] obtenerCamposFormulario() {
 		String[] campos = new String[5];
-		campos[0] = nombreField.getText();
-		campos[1] = precioVentaField.getText();
-		campos[2] = costoProduccionField.getText();
-		campos[3] = cantidadField.getText();
+		campos[0] = nombreField.getText().trim();
+		campos[1] = precioVentaField.getText().trim();
+		campos[2] = costoProduccionField.getText().trim();
+		campos[3] = cantidadField.getText().trim();
 		campos[4] = tipoProductoComboBox.getSelectedItem().toString();
 		
 		return campos;
+	}
+	
+	public void rellenarCamposFormulario(ProductoDTO producto) {
+		nombreField.setText(producto.getNombre());
+		precioVentaField.setText(String.valueOf(producto.getPrecioVenta()));
+		costoProduccionField.setText(String.valueOf(producto.getCostoProduccion()));
+		cantidadField.setText(String.valueOf(producto.getCantidad()));
+		tipoProductoComboBox.setSelectedItem(producto.getTipo());
 	}
 
 	public JTextField getNombreField() {

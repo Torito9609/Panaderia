@@ -8,7 +8,6 @@ public class Vista {
 	private VentanaProducto ventanaProducto;
 	
 	public Vista() {
-		super();
 		ventanaPrincipal = new VentanaPrincipal();
 		ventanaProducto = new VentanaProducto();
 	}

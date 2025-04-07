@@ -2,16 +2,23 @@ package co.edu.unbosque.controller;
 
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
+
+import javax.swing.JOptionPane;
 
 import co.edu.unbosque.model.Panaderia;
 import co.edu.unbosque.model.dto.ProductoDTO;
 import co.edu.unbosque.model.exception.AccesoDatosException;
 import co.edu.unbosque.model.exception.CantidadInvalidaException;
+import co.edu.unbosque.model.exception.NombreProductoDuplicadoException;
 import co.edu.unbosque.model.exception.NombreProductoInvalidoException;
 import co.edu.unbosque.model.exception.PrecioInvalidoException;
+import co.edu.unbosque.model.exception.ProductoNoEncontradoException;
 import co.edu.unbosque.model.exception.TipoProductoInvalidoException;
+import co.edu.unbosque.view.PanelGalleta;
+import co.edu.unbosque.view.PanelPan;
 import co.edu.unbosque.view.Vista;
 
 public class Controlador implements ActionListener {
@@ -19,6 +26,10 @@ public class Controlador implements ActionListener {
 	private Vista vista;
 
 	public Controlador() {
+
+		vista = new Vista();
+		asignaOyentes();
+
 		try {
 			try {
 				panaderia = new Panaderia();
@@ -42,16 +53,16 @@ public class Controlador implements ActionListener {
 			vista.mostrarMensajeError("Error al acceder al archivo de persistencia: " + e.getMessage());
 			e.printStackTrace();
 		}
-		vista = new Vista();
-		asignaOyentes();
+
 		reiniciarTabla();
+
 	}
 
 	public void reiniciarTabla() {
-		List<ProductoDTO> todosEmpleados = new ArrayList();
+		List<ProductoDTO> todosProductos = new ArrayList<ProductoDTO>();
 		try {
 			try {
-				todosEmpleados = panaderia.listarProductos();
+				todosProductos = panaderia.listarProductos();
 			} catch (AccesoDatosException e) {
 				vista.mostrarMensajeError("Error leyendo el archivo: " + e.getMessage());
 				e.printStackTrace();
@@ -72,7 +83,7 @@ public class Controlador implements ActionListener {
 			vista.mostrarMensajeError("El nombre de un producto es inválido: " + e.getMessage());
 			e.printStackTrace();
 		}
-		vista.getVentanaPrincipal().getPanelTabla().actualizarTabla(todosEmpleados);
+		vista.getVentanaPrincipal().getPanelTabla().actualizarTabla(todosProductos);
 	}
 
 	public void asignaOyentes() {
@@ -111,27 +122,33 @@ public class Controlador implements ActionListener {
 			vista.getVentanaPrincipal().getPanelBusqueda().getBuscarButton().setVisible(false);
 			String seleccion = vista.getVentanaPrincipal().getPanelBusqueda().getFiltroComboBox().getSelectedItem()
 					.toString();
-			
+
 			switch (seleccion) {
 			case "Tipo" -> {
 				vista.getVentanaPrincipal().getPanelBusqueda().mostrarFiltroPorTipo();
 				vista.getVentanaPrincipal().getPanelBusqueda().getTipoProductoFiltroComboBox().addActionListener(this);
+				if (comando.equals("FILTRO_TIPO")) {
+					filtrarPorTipo();
+				}
+
 			}
 			case "Cantidad" -> {
 				vista.getVentanaPrincipal().getPanelBusqueda().mostrarFiltroPorCantidad();
+				for (ActionListener al : vista.getVentanaPrincipal().getPanelBusqueda().getFiltrarButton()
+						.getActionListeners()) {
+					vista.getVentanaPrincipal().getPanelBusqueda().getFiltrarButton().removeActionListener(al);
+				}
 				vista.getVentanaPrincipal().getPanelBusqueda().getFiltrarButton().addActionListener(this);
 
-				if (comando.equals("FILTRAR_BUTTON")) {
-					filtrarPorCantidad();
-				}
 			}
 			case "Precio" -> {
 				vista.getVentanaPrincipal().getPanelBusqueda().mostrarFiltroPorPrecio();
+				for (ActionListener al : vista.getVentanaPrincipal().getPanelBusqueda().getFiltrarButton()
+						.getActionListeners()) {
+					vista.getVentanaPrincipal().getPanelBusqueda().getFiltrarButton().removeActionListener(al);
+				}
 				vista.getVentanaPrincipal().getPanelBusqueda().getFiltrarButton().addActionListener(this);
 
-				if (comando.equals("FILTRAR_BUTTON")) {
-					filtrarPorPrecio();
-				}
 			}
 			default -> {
 				reiniciarTabla();
@@ -140,58 +157,334 @@ public class Controlador implements ActionListener {
 			}
 			}
 
-		} else if (comando.equals("FILTRO_TIPO")) {
+		} else if (comando.equals("FILTRAR_BUTTON")) {
+			String seleccion = vista.getVentanaPrincipal().getPanelBusqueda().getFiltroComboBox().getSelectedItem()
+					.toString();
+
+			switch (seleccion) {
+			case "Cantidad" -> filtrarPorCantidad();
+			case "Precio" -> filtrarPorPrecio();
+			}
+
+		}
+
+		else if (comando.equals("FILTRO_TIPO")) {
 			filtrarPorTipo();
 
 		} else if (comando.equals("ELIMINAR_PRODUCTO")) {
-			System.out.println(comando);
+			eliminarProducto();
 
 		} else if (comando.equals("CREAR_PRODUCTO")) {
 			vista.getVentanaProducto().setVisible(true);
+			vista.getVentanaProducto().getPanelDinamico().getEditarButton().setVisible(false);
 			reiniciarCamposEdicionCreacion();
-			System.out.println(comando);
 
 		} else if (comando.equals("CREAR")) {
-			System.out.println(comando);
+			crearProducto();
 
 		} else if (comando.equals("CANCELAR")) {
 			vista.getVentanaProducto().setVisible(false);
-			System.out.println(comando);
 
 		} else if (comando.equals("EDITAR_PRODUCTO")) {
-			System.out.println(comando);
+			editarProducto();
 
 		} else if (comando.equals("TIPO_PRODUCTO")) {
 			String tipoProducto = vista.getVentanaProducto().getPanelSuperior().getTipoProductoComboBox()
 					.getSelectedItem().toString();
 			vista.getVentanaProducto().getPanelDinamico().mostrarPanel(tipoProducto);
-			System.out.println(comando);
 
 		} else if (comando.equals("EDITAR")) {
-			System.out.println(comando);
+			finalizarEdicionProducto();
+		} else if (comando.equals("EXPORTAR_CSV")) {
+			exportarCSV();
 		}
-
 	}
 
-	public void agregarProducto() {
+	public void crearProducto() {
+		vista.getVentanaProducto().getPanelDinamico().getCrearButton().setVisible(true);
 		String[] datos = vista.getVentanaProducto().getPanelSuperior().obtenerCamposFormulario();
 		String nombre = datos[0];
-		try {
-			double precioVenta = Double.parseDouble(datos[1]);
-			double costoProduccion = Double.parseDouble(datos[2]);
-			int cantidadField = Integer.parseInt(datos[3]);
-		} catch (NumberFormatException ex) {
-			vista.mostrarMensajeError("El valor del precio debe ser numerico.");
-		}
+		double precioVenta = Double.parseDouble(datos[1]);
+		double costoProduccion = Double.parseDouble(datos[2]);
+		int cantidad = Integer.parseInt(datos[3]);
+
 		String tipo = datos[4];
+
+		if (tipo.equals("Pan")) {
+			PanelPan panelPan = (PanelPan) vista.getVentanaProducto().getPanelDinamico().getPanelActual();
+			boolean conQueso = panelPan.isConQueso();
+
+			int confirmacion = vista.mostrarMensajeConfirmacion("¿Está seguro de crear el nuevo producto?");
+
+			if (confirmacion == JOptionPane.YES_OPTION) {
+				ProductoDTO nuevoProducto = new ProductoDTO();
+				nuevoProducto.setNombre(nombre);
+				nuevoProducto.setPrecioVenta(precioVenta);
+				nuevoProducto.setCostoProduccion(costoProduccion);
+				nuevoProducto.setCantidad(cantidad);
+				nuevoProducto.setTipo(tipo);
+				nuevoProducto.setConQueso(conQueso);
+				try {
+					panaderia.crearProducto(nuevoProducto);
+				} catch (NombreProductoDuplicadoException e) {
+					vista.mostrarMensajeError("Error en el nombre del producto:\n" + e.getMessage());
+					e.printStackTrace();
+					return;
+				} catch (PrecioInvalidoException e) {
+					vista.mostrarMensajeError("Error en el precio del producto:\n" + e.getMessage());
+					e.printStackTrace();
+					return;
+				} catch (CantidadInvalidaException e) {
+					vista.mostrarMensajeError("Error en la cantidad del producto:\n" + e.getMessage());
+					e.printStackTrace();
+					return;
+				} catch (TipoProductoInvalidoException e) {
+					vista.mostrarMensajeError("Error en el tipo de producto:" + e.getMessage());
+					e.printStackTrace();
+					return;
+				} catch (NombreProductoInvalidoException e) {
+					vista.mostrarMensajeError("Error en el nombre del producto:\n" + e.getMessage());
+					e.printStackTrace();
+					return;
+				} catch (AccesoDatosException e) {
+					vista.mostrarMensajeError("Error guardando el archivo en BD:\n" + e.getMessage());
+					e.printStackTrace();
+					return;
+				}
+				reiniciarTabla();
+				vista.mostrarMensajeExito("Producto creado exitosamente!");
+				vista.getVentanaProducto().setVisible(false);
+			} else {
+				vista.mostrarMensajeExito("Operación cancelada exitosamente.");
+				vista.getVentanaProducto().setVisible(false);
+			}
+
+		} else if (tipo.equals("Galleta")) {
+			PanelGalleta panelGalleta = (PanelGalleta) vista.getVentanaProducto().getPanelDinamico().getPanelActual();
+			boolean conChispas = panelGalleta.isConChispas();
+
+			int confirmacion = vista.mostrarMensajeConfirmacion("¿Está seguro de crear el nuevo producto?");
+
+			if (confirmacion == JOptionPane.YES_OPTION) {
+				ProductoDTO nuevoProducto = new ProductoDTO();
+				nuevoProducto.setNombre(nombre);
+				nuevoProducto.setPrecioVenta(precioVenta);
+				nuevoProducto.setCostoProduccion(costoProduccion);
+				nuevoProducto.setCantidad(cantidad);
+				nuevoProducto.setTipo(tipo);
+				nuevoProducto.setConChispas(conChispas);
+				try {
+					panaderia.crearProducto(nuevoProducto);
+				} catch (NombreProductoDuplicadoException e) {
+					vista.mostrarMensajeError("Error en el nombre del producto:\n" + e.getMessage());
+					e.printStackTrace();
+					return;
+				} catch (PrecioInvalidoException e) {
+					vista.mostrarMensajeError("Error en el precio del producto:\n" + e.getMessage());
+					e.printStackTrace();
+					return;
+				} catch (CantidadInvalidaException e) {
+					vista.mostrarMensajeError("Error en la cantidad del producto:\n" + e.getMessage());
+					e.printStackTrace();
+					return;
+				} catch (TipoProductoInvalidoException e) {
+					vista.mostrarMensajeError("Error en el tipo de producto:" + e.getMessage());
+					e.printStackTrace();
+					return;
+				} catch (NombreProductoInvalidoException e) {
+					vista.mostrarMensajeError("Error en el nombre del producto:\n" + e.getMessage());
+					e.printStackTrace();
+					return;
+				} catch (AccesoDatosException e) {
+					vista.mostrarMensajeError("Error guardando el archivo en BD:\n" + e.getMessage());
+					e.printStackTrace();
+					return;
+				}
+				reiniciarTabla();
+				vista.mostrarMensajeExito("Producto creado exitosamente!");
+				vista.getVentanaProducto().setVisible(false);
+			} else {
+				vista.mostrarMensajeExito("Operación cancelada exitosamente.");
+				vista.getVentanaProducto().setVisible(false);
+			}
+		}
+
 	}
 
 	public void editarProducto() {
+		vista.getVentanaProducto().getPanelDinamico().getCrearButton().setVisible(false);
+		int filaSeleccionada = vista.getVentanaPrincipal().getPanelTabla().getTablaProductos().getSelectedRow();
+		if (filaSeleccionada == -1) {
+			vista.mostrarMensajeError("Por favor, seleccione un producto en la tabla para editar.");
+		} else {
+			String nombreEditar = vista.getVentanaPrincipal().getPanelTabla().getTablaProductos()
+					.getValueAt(filaSeleccionada, 0).toString();
+			try {
+				ProductoDTO productoEditar = panaderia.buscarPorNombre(nombreEditar);
+				reiniciarCamposEdicionCreacion();
+				vista.getVentanaProducto().getPanelSuperior().rellenarCamposFormulario(productoEditar);
+				vista.getVentanaProducto().getPanelSuperior().getNombreField().setEditable(false);
+				vista.getVentanaProducto().getPanelSuperior().getTipoProductoComboBox().setEnabled(false);
+				if(productoEditar.getTipo().equals("Pan")) {
+					PanelPan panelPan = (PanelPan) vista.getVentanaProducto().getPanelDinamico().getPanelActual();
+					panelPan.setConQueso(productoEditar.isConQueso());
+				}else if(productoEditar.getTipo().equals("Galleta")) {
+					PanelGalleta panelGalleta = (PanelGalleta) vista.getVentanaProducto().getPanelDinamico().getPanelActual();
+					panelGalleta.setConChispas(productoEditar.isConChispas());
+				}
+				vista.getVentanaProducto().setVisible(true);
+			} catch (ProductoNoEncontradoException e) {
+				vista.mostrarMensajeError("Error buscando el producto:" + e.getMessage());
+				e.printStackTrace();
+				return;
+			}
+		}
+	}
+
+	public void finalizarEdicionProducto() {
+		String[] datos = vista.getVentanaProducto().getPanelSuperior().obtenerCamposFormulario();
+		String nombre = datos[0];
+		double precioVenta = Double.parseDouble(datos[1]);
+		double costoProduccion = Double.parseDouble(datos[2]);
+		int cantidad = Integer.parseInt(datos[3]);
+		String tipo = datos[4];
+		ProductoDTO productoNuevo = new ProductoDTO();
+		productoNuevo.setNombre(nombre);
+		productoNuevo.setPrecioVenta(precioVenta);
+		productoNuevo.setCostoProduccion(costoProduccion);
+		productoNuevo.setCantidad(cantidad);
+		productoNuevo.setTipo(tipo);
+
+		if (tipo.equals("Pan")) {
+			PanelPan panelPan = (PanelPan) vista.getVentanaProducto().getPanelDinamico().getPanelActual();
+			boolean conQueso = panelPan.isConQueso();
+			productoNuevo.setConQueso(conQueso);
+
+			int confirmacion = vista.mostrarMensajeConfirmacion("¿Está seguro de editar el producto?");
+
+			if (confirmacion == JOptionPane.YES_OPTION) {
+				try {
+					panaderia.editarProducto(nombre, productoNuevo);
+				} catch (NombreProductoDuplicadoException e) {
+					vista.mostrarMensajeError("Error en el nombre: " + e.getMessage());
+					e.printStackTrace();
+					return;
+				} catch (PrecioInvalidoException e) {
+					vista.mostrarMensajeError("Error en el precio: " + e.getMessage());
+					e.printStackTrace();
+					return;
+				} catch (CantidadInvalidaException e) {
+					vista.mostrarMensajeError("Error en la cantidad: " + e.getMessage());
+					e.printStackTrace();
+					return;
+				} catch (TipoProductoInvalidoException e) {
+					vista.mostrarMensajeError("Error en el tipo de producto: " + e.getMessage());
+					e.printStackTrace();
+					return;
+				} catch (NombreProductoInvalidoException e) {
+					vista.mostrarMensajeError("Error en el nombre: " + e.getMessage());
+					e.printStackTrace();
+					return;
+				} catch (AccesoDatosException e) {
+					vista.mostrarMensajeError("Error guardando cambios en BBDD " + e.getMessage());
+					e.printStackTrace();
+					return;
+				} catch (IOException e) {
+					vista.mostrarMensajeError("Error accediendo al archivo " + e.getMessage());
+					e.printStackTrace();
+					return;
+				}
+				reiniciarTabla();
+				vista.mostrarMensajeExito("Producto editado exitosamente.");
+				vista.getVentanaProducto().setVisible(false);
+
+			} else {
+				vista.mostrarMensajeExito("Operación cancelada exitosamente.");
+				vista.getVentanaProducto().setVisible(false);
+			}
+
+		} else if (tipo.equals("Galleta")) {
+			PanelGalleta panelGalleta = (PanelGalleta) vista.getVentanaProducto().getPanelDinamico().getPanelActual();
+			boolean conChispas = panelGalleta.isConChispas();
+			productoNuevo.setConChispas(conChispas);
+
+			int confirmacion = vista.mostrarMensajeConfirmacion("¿Está seguro de editar el producto?");
+
+			if (confirmacion == JOptionPane.YES_OPTION) {
+				try {
+					panaderia.editarProducto(nombre, productoNuevo);
+				} catch (NombreProductoDuplicadoException e) {
+					vista.mostrarMensajeError("Error en el nombre: " + e.getMessage());
+					e.printStackTrace();
+					return;
+				} catch (PrecioInvalidoException e) {
+					vista.mostrarMensajeError("Error en el precio: " + e.getMessage());
+					e.printStackTrace();
+					return;
+				} catch (CantidadInvalidaException e) {
+					vista.mostrarMensajeError("Error en la cantidad: " + e.getMessage());
+					e.printStackTrace();
+					return;
+				} catch (TipoProductoInvalidoException e) {
+					vista.mostrarMensajeError("Error en el tipo de producto: " + e.getMessage());
+					e.printStackTrace();
+					return;
+				} catch (NombreProductoInvalidoException e) {
+					vista.mostrarMensajeError("Error en el nombre: " + e.getMessage());
+					e.printStackTrace();
+					return;
+				} catch (AccesoDatosException e) {
+					vista.mostrarMensajeError("Error guardando cambios en BBDD " + e.getMessage());
+					e.printStackTrace();
+					return;
+				} catch (IOException e) {
+					vista.mostrarMensajeError("Error accediendo al archivo " + e.getMessage());
+					e.printStackTrace();
+					return;
+				}
+				reiniciarTabla();
+				vista.mostrarMensajeExito("Producto editado exitosamente.");
+				vista.getVentanaProducto().setVisible(false);
+
+			} else {
+				vista.mostrarMensajeExito("Operación cancelada exitosamente.");
+				vista.getVentanaProducto().setVisible(false);
+			}
+		}
 
 	}
 
-	public void eliminarProducto(String nombre) {
+	public void eliminarProducto() {
+		int filaSeleccionada = vista.getVentanaPrincipal().getPanelTabla().getTablaProductos().getSelectedRow();
+		if (filaSeleccionada == -1) {
+			vista.mostrarMensajeError("Por favor, seleccione un producto de la tabla para eliminar.");
+		} else {
+			int opcion = vista.mostrarMensajeConfirmacion("¿Está seguro que desea eliminar el producto?");
 
+			if (opcion == JOptionPane.YES_OPTION) {
+				String nombreEliminar = vista.getVentanaPrincipal().getPanelTabla().getTablaProductos()
+						.getValueAt(filaSeleccionada, 0).toString();
+				try {
+					panaderia.eliminarProducto(nombreEliminar);
+				} catch (ProductoNoEncontradoException e) {
+					vista.mostrarMensajeError("Verifique el producto\n" + e.getMessage());
+					e.printStackTrace();
+					return;
+				} catch (AccesoDatosException e) {
+					vista.mostrarMensajeError("Error actualizando la BBDD\n" + e.getMessage());
+					e.printStackTrace();
+					return;
+				} catch (IOException e) {
+					vista.mostrarMensajeError("Error accediendo al archivo de persistencia\n" + e.getMessage());
+					e.printStackTrace();
+					return;
+				}
+				vista.mostrarMensajeExito("Producto eliminado exitosamente.");
+				reiniciarTabla();
+			} else {
+				vista.mostrarMensajeExito("Operacion cancelada exitosamente.");
+			}
+		}
 	}
 
 	public void filtarPorNombreCoincidencia() {
@@ -219,10 +512,6 @@ public class Controlador implements ActionListener {
 		}
 	}
 
-	public void filtrarPorNombreExacto(String nombre) {
-
-	}
-
 	public void filtrarPorCantidad() {
 		String entrada = vista.getVentanaPrincipal().getPanelBusqueda().getCantidadMinimaField().getText();
 		int cantidad = Integer.parseInt(entrada);
@@ -245,8 +534,8 @@ public class Controlador implements ActionListener {
 	}
 
 	public void filtrarPorTipo() {
-		String seleccion = vista.getVentanaPrincipal().getPanelBusqueda().getFiltroComboBox().getSelectedItem()
-				.toString();
+		String seleccion = vista.getVentanaPrincipal().getPanelBusqueda().getTipoProductoFiltroComboBox()
+				.getSelectedItem().toString();
 
 		switch (seleccion) {
 		case "Pan" -> {
@@ -273,11 +562,42 @@ public class Controlador implements ActionListener {
 		}
 	}
 
-	public void guardarProducto() {
-
-	}
-
 	public void exportarCSV() {
+		List<ProductoDTO> productos;
+		try {
+			productos = panaderia.listarProductos();
+			try {
+				panaderia.exportarProductosCSV(productos);
+			} catch (AccesoDatosException e) {
+				vista.mostrarMensajeError("Error accediendo al archivo:" + e.getMessage());
+				e.printStackTrace();
+			}
+		} catch (ClassNotFoundException e) {
+			vista.mostrarMensajeError("Error con el archivo csv" + e.getMessage());
+			e.printStackTrace();
+			return;
+		} catch (AccesoDatosException e) {
+			vista.mostrarMensajeError("Error accediendo al archivo: " + e.getMessage());
+			e.printStackTrace();
+			return;
+		} catch (TipoProductoInvalidoException e) {
+			vista.mostrarMensajeError("Error en tipo de producto" + e.getMessage());
+			e.printStackTrace();
+			return;
+		} catch (PrecioInvalidoException e) {
+			vista.mostrarMensajeError("Error en el precio del producto: " + e.getMessage());
+			e.printStackTrace();
+			return;
+		} catch (CantidadInvalidaException e) {
+			vista.mostrarMensajeError("Error en la cantidad de un producto: " + e.getMessage());
+			e.printStackTrace();
+			return;
+		} catch (NombreProductoInvalidoException e) {
+			vista.mostrarMensajeError("Error en el nombre de un producto: " + e.getMessage());
+			e.printStackTrace();
+		}
+
+		vista.mostrarMensajeExito("Archivo CSV creado con exito.");
 
 	}
 
