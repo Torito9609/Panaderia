@@ -7,6 +7,9 @@ import co.edu.unbosque.model.dto.ProductoDTO;
 import co.edu.unbosque.model.entity.Galleta;
 import co.edu.unbosque.model.entity.Pan;
 import co.edu.unbosque.model.entity.Producto;
+import co.edu.unbosque.model.exception.CantidadInvalidaException;
+import co.edu.unbosque.model.exception.NombreProductoInvalidoException;
+import co.edu.unbosque.model.exception.PrecioInvalidoException;
 import co.edu.unbosque.model.exception.TipoProductoInvalidoException;
 
 public class MapHandler {
@@ -28,16 +31,17 @@ public class MapHandler {
 
 		return dto;
 	}
-	
-	public static List<ProductoDTO> todosProductoADTO(List<Producto> productos){
+
+	public static List<ProductoDTO> todosProductoADTO(List<Producto> productos) {
 		List<ProductoDTO> productosDTO = new ArrayList<ProductoDTO>();
-		for(Producto p : productos) {
+		for (Producto p : productos) {
 			productosDTO.add(productoADTO(p));
 		}
 		return productosDTO;
 	}
 
-	public static Producto dtoAProducto(ProductoDTO productoDTO) throws TipoProductoInvalidoException {
+	public static Producto dtoAProducto(ProductoDTO productoDTO) throws TipoProductoInvalidoException,
+			PrecioInvalidoException, CantidadInvalidaException, NombreProductoInvalidoException {
 		String tipo = productoDTO.getTipo();
 
 		switch (tipo) {
@@ -51,10 +55,12 @@ public class MapHandler {
 			throw new TipoProductoInvalidoException("Tipo de producto inválido: " + tipo);
 		}
 	}
-	
-	public static List<Producto> todosDtoAProducto(List<ProductoDTO> productosDTO) throws TipoProductoInvalidoException{
+
+	public static List<Producto> todosDtoAProducto(List<ProductoDTO> productosDTO)
+			throws TipoProductoInvalidoException,
+			PrecioInvalidoException, CantidadInvalidaException, NombreProductoInvalidoException {
 		List<Producto> productos = new ArrayList<Producto>();
-		for(ProductoDTO p : productosDTO) {
+		for (ProductoDTO p : productosDTO) {
 			productos.add(dtoAProducto(p));
 		}
 		return productos;

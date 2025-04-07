@@ -7,6 +7,9 @@ import java.util.List;
 import co.edu.unbosque.model.dto.ProductoDTO;
 import co.edu.unbosque.model.entity.Producto;
 import co.edu.unbosque.model.exception.AccesoDatosException;
+import co.edu.unbosque.model.exception.CantidadInvalidaException;
+import co.edu.unbosque.model.exception.NombreProductoInvalidoException;
+import co.edu.unbosque.model.exception.PrecioInvalidoException;
 import co.edu.unbosque.model.exception.TipoProductoInvalidoException;
 
 public class Archivo {
@@ -39,7 +42,8 @@ public class Archivo {
 		}
 	}
 
-	public List<Producto> cargar() throws AccesoDatosException, ClassNotFoundException, TipoProductoInvalidoException {
+	public List<Producto> cargar() throws AccesoDatosException, ClassNotFoundException, TipoProductoInvalidoException,
+			PrecioInvalidoException, CantidadInvalidaException, NombreProductoInvalidoException, ClassNotFoundException {
 		if (ubicacionArchivo.length() == 0) {
 			return new ArrayList<Producto>();
 		}
@@ -51,7 +55,7 @@ public class Archivo {
 			entrada.close();
 			List<Producto> datosSalida = MapHandler.todosDtoAProducto(datos);
 			return datosSalida;
-		} catch (IOException | ClassNotFoundException ex) {
+		} catch (IOException ex) {
 			throw new AccesoDatosException("Error al leer el archivo de datos", ex);
 		}
 

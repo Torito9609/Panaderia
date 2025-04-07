@@ -1,6 +1,7 @@
 package co.edu.unbosque.model.entity;
 
 import co.edu.unbosque.model.exception.CantidadInvalidaException;
+import co.edu.unbosque.model.exception.NombreProductoInvalidoException;
 import co.edu.unbosque.model.exception.PrecioInvalidoException;
 
 public abstract class Producto {
@@ -8,16 +9,25 @@ public abstract class Producto {
 	protected double precioVenta;
 	protected double costoProduccion;
 	protected int cantidad;
-	
+
 	public Producto(String nombre, double precioVenta, double costoProduccion, int cantidad) {
 		this.nombre = nombre;
 		this.precioVenta = precioVenta;
 		this.costoProduccion = costoProduccion;
 		this.cantidad = cantidad;
 	}
-	
-	public void validarDatos() throws PrecioInvalidoException, CantidadInvalidaException{
-		
+
+	public void validarDatos()
+			throws PrecioInvalidoException, CantidadInvalidaException, NombreProductoInvalidoException {
+		if (nombre == null || nombre.trim().isEmpty()) {
+			throw new NombreProductoInvalidoException("El nombre no puede estar vacío.");
+		}
+		if (precioVenta <= 0 || costoProduccion < 0 || costoProduccion >= precioVenta) {
+			throw new PrecioInvalidoException("Precio o costo inválidos.");
+		}
+		if (cantidad < 0) {
+			throw new CantidadInvalidaException("Cantidad no puede ser negativa.");
+		}
 	}
 
 	public String getNombre() {
@@ -52,6 +62,13 @@ public abstract class Producto {
 		this.cantidad = cantidad;
 	}
 	
-	
+	@Override
+	public boolean equals(Object obj) {
+	    if (this == obj) return true;
+	    if (obj == null || getClass() != obj.getClass()) return false;
+	    Producto producto = (Producto) obj;
+	    return nombre.equalsIgnoreCase(producto.nombre);
+	}
+
 
 }

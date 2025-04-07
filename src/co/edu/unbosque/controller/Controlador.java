@@ -7,6 +7,10 @@ import java.util.List;
 
 import co.edu.unbosque.model.Panaderia;
 import co.edu.unbosque.model.dto.ProductoDTO;
+import co.edu.unbosque.model.exception.AccesoDatosException;
+import co.edu.unbosque.model.exception.CantidadInvalidaException;
+import co.edu.unbosque.model.exception.NombreProductoInvalidoException;
+import co.edu.unbosque.model.exception.PrecioInvalidoException;
 import co.edu.unbosque.model.exception.TipoProductoInvalidoException;
 import co.edu.unbosque.view.Vista;
 
@@ -15,7 +19,29 @@ public class Controlador implements ActionListener {
 	private Vista vista;
 
 	public Controlador() {
-		panaderia = new Panaderia();
+		try {
+			try {
+				panaderia = new Panaderia();
+			} catch (ClassNotFoundException e) {
+				vista.mostrarMensajeError("La clase no existe en persistencia: " + e.getMessage());
+				e.printStackTrace();
+			} catch (TipoProductoInvalidoException e) {
+				vista.mostrarMensajeError("El Tipo de producto de un DTO es invalido: " + e.getMessage());
+				e.printStackTrace();
+			} catch (PrecioInvalidoException e) {
+				vista.mostrarMensajeError("El precio de un producto es inválido: " + e.getMessage());
+				e.printStackTrace();
+			} catch (CantidadInvalidaException e) {
+				vista.mostrarMensajeError("La cantidad de un producto es inválida: " + e.getMessage());
+				e.printStackTrace();
+			} catch (NombreProductoInvalidoException e) {
+				vista.mostrarMensajeError("El nombre de un producto es inválido: " + e.getMessage());
+				e.printStackTrace();
+			}
+		} catch (AccesoDatosException e) {
+			vista.mostrarMensajeError("Error al acceder al archivo de persistencia: " + e.getMessage());
+			e.printStackTrace();
+		}
 		vista = new Vista();
 		asignaOyentes();
 		reiniciarTabla();
@@ -23,7 +49,29 @@ public class Controlador implements ActionListener {
 
 	public void reiniciarTabla() {
 		List<ProductoDTO> todosEmpleados = new ArrayList();
-		todosEmpleados = panaderia.listarProductos();
+		try {
+			try {
+				todosEmpleados = panaderia.listarProductos();
+			} catch (AccesoDatosException e) {
+				vista.mostrarMensajeError("Error leyendo el archivo: " + e.getMessage());
+				e.printStackTrace();
+			}
+		} catch (ClassNotFoundException e) {
+			vista.mostrarMensajeError("La clase no existe en persistencia: " + e.getMessage());
+			e.printStackTrace();
+		} catch (TipoProductoInvalidoException e) {
+			vista.mostrarMensajeError("El Tipo de producto de un DTO es invalido: " + e.getMessage());
+			e.printStackTrace();
+		} catch (PrecioInvalidoException e) {
+			vista.mostrarMensajeError("El precio de un producto es inválido: " + e.getMessage());
+			e.printStackTrace();
+		} catch (CantidadInvalidaException e) {
+			vista.mostrarMensajeError("La cantidad de un producto es inválida: " + e.getMessage());
+			e.printStackTrace();
+		} catch (NombreProductoInvalidoException e) {
+			vista.mostrarMensajeError("El nombre de un producto es inválido: " + e.getMessage());
+			e.printStackTrace();
+		}
 		vista.getVentanaPrincipal().getPanelTabla().actualizarTabla(todosEmpleados);
 	}
 
