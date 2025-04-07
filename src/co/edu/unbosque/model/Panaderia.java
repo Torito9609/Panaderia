@@ -92,22 +92,6 @@ public class Panaderia {
 	    return MapHandler.todosProductoADTO(productos);
 	}
 
-
-	public void guardarProductos(List<ProductoDTO> productos) throws TipoProductoInvalidoException,
-			PrecioInvalidoException, CantidadInvalidaException, NombreProductoInvalidoException, AccesoDatosException { 
-																									
-		for (ProductoDTO producto : productos) {
-			Producto productoEntidad = MapHandler.dtoAProducto(producto);
-			panaderiaDAO.add(productoEntidad);
-		}
-	}
-
-	public List<ProductoDTO> cargarProductos()
-			throws ClassNotFoundException, AccesoDatosException, TipoProductoInvalidoException, PrecioInvalidoException, CantidadInvalidaException, NombreProductoInvalidoException { 
-		List<Producto> productos = panaderiaDAO.getAll();
-		return MapHandler.todosProductoADTO(productos);
-	}
-
 	public void exportarProductosCSV(List<ProductoDTO> productos) throws AccesoDatosException { 
 		ExportadorCSV.exportar(productos);
 	}

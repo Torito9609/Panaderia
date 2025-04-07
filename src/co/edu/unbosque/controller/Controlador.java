@@ -313,6 +313,7 @@ public class Controlador implements ActionListener {
 
 	public void editarProducto() {
 		vista.getVentanaProducto().getPanelDinamico().getCrearButton().setVisible(false);
+		vista.getVentanaProducto().getPanelDinamico().getEditarButton().setVisible(true);
 		int filaSeleccionada = vista.getVentanaPrincipal().getPanelTabla().getTablaProductos().getSelectedRow();
 		if (filaSeleccionada == -1) {
 			vista.mostrarMensajeError("Por favor, seleccione un producto en la tabla para editar.");
