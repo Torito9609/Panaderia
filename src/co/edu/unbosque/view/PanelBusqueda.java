@@ -6,7 +6,7 @@ import java.awt.*;
 public class PanelBusqueda extends JPanel {
 
     private JComboBox<String> buscarPorComboBox, filtroComboBox, tipoProductoFiltroComboBox;
-    private JButton buscarButton;
+    private JButton buscarButton, filtrarButton;
     private JTextField buscarTextField, cantidadMinimaField, precioMinimoField, precioMaximoField;
     private JPanel panelFiltrosDinamico;
 
@@ -54,6 +54,9 @@ public class PanelBusqueda extends JPanel {
         panelFiltrosDinamico.add(new JLabel("Cantidad mínima:"));
         cantidadMinimaField = new JTextField(6);
         panelFiltrosDinamico.add(cantidadMinimaField);
+        filtrarButton = new JButton("Filtrar");
+        filtrarButton.setActionCommand("FILTRAR_BUTTON");
+        panelFiltrosDinamico.add(filtrarButton);
         recargarPanel();
     }
 
@@ -66,6 +69,10 @@ public class PanelBusqueda extends JPanel {
         panelFiltrosDinamico.add(new JLabel("Precio máximo:"));
         precioMaximoField = new JTextField(6);
         panelFiltrosDinamico.add(precioMaximoField);
+        
+        filtrarButton = new JButton("Filtrar");
+        filtrarButton.setActionCommand("FILTRAR_BUTTON");
+        panelFiltrosDinamico.add(filtrarButton);
         recargarPanel();
     }
 
@@ -110,4 +117,15 @@ public class PanelBusqueda extends JPanel {
     public JButton getBuscarButton() {
         return buscarButton;
     }
+
+	public JButton getFiltrarButton() {
+		return filtrarButton;
+	}
+
+	public void setFiltrarButton(JButton filtrarButton) {
+		this.filtrarButton = filtrarButton;
+	}
+    
+    
+    
 }

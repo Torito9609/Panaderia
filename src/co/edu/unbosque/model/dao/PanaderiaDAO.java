@@ -56,6 +56,11 @@ public class PanaderiaDAO implements IPanaderiaDAO<Producto>{
 		// TODO Auto-generated method stub
 		return null;
 	}
+	
+	@Override
+	public List<Producto> filtrarPorTipo(String tipo){
+		return null;
+	}
 
 	public List<Producto> getProductos() {
 		return productos;

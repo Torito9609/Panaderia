@@ -37,12 +37,23 @@ public class PanelProductoSuperior extends JPanel {
 		add(tipoProductoComboBox);
 	}
 
-	public void limpiarCampos() {
+	public void limpiarCamposFormulario() {
 		nombreField.setText("");
 		precioVentaField.setText("");
 		costoProduccionField.setText("");
 		cantidadField.setText("");
 		tipoProductoComboBox.setSelectedItem("Seleccionar");
+	}
+	
+	public String[] obtenerCamposFormulario() {
+		String[] campos = new String[5];
+		campos[0] = nombreField.getText();
+		campos[1] = precioVentaField.getText();
+		campos[2] = costoProduccionField.getText();
+		campos[3] = cantidadField.getText();
+		campos[4] = tipoProductoComboBox.getSelectedItem().toString();
+		
+		return campos;
 	}
 
 	public JTextField getNombreField() {

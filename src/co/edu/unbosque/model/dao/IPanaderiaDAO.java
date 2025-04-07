@@ -19,4 +19,6 @@ public interface IPanaderiaDAO<T> {
 	List<T> filtrarPorCantidad(int cantidadMinima);
 
 	List<T> filtrarPorPrecio(double precioMin, double precioMax);
+	
+	List<T> filtrarPorTipo(String tipo);
 }

@@ -7,6 +7,7 @@ import java.util.List;
 
 import co.edu.unbosque.model.Panaderia;
 import co.edu.unbosque.model.dto.ProductoDTO;
+import co.edu.unbosque.model.exception.TipoProductoInvalidoException;
 import co.edu.unbosque.view.Vista;
 
 public class Controlador implements ActionListener {
@@ -33,6 +34,7 @@ public class Controlador implements ActionListener {
 		vista.getVentanaPrincipal().getPanelInferior().getCrearButton().addActionListener(this);
 		vista.getVentanaPrincipal().getPanelInferior().getEditarButton().addActionListener(this);
 		vista.getVentanaPrincipal().getPanelInferior().getEliminarButton().addActionListener(this);
+		vista.getVentanaPrincipal().getPanelInferior().getExportarCsvButton().addActionListener(this);
 		vista.getVentanaProducto().getPanelSuperior().getTipoProductoComboBox().addActionListener(this);
 		vista.getVentanaProducto().getPanelDinamico().getEditarButton().addActionListener(this);
 		vista.getVentanaProducto().getPanelDinamico().getCancelarButton().addActionListener(this);
@@ -45,42 +47,60 @@ public class Controlador implements ActionListener {
 	}
 
 	private void reiniciarCamposEdicionCreacion() {
-		vista.getVentanaProducto().getPanelSuperior().limpiarCampos();
+		vista.getVentanaProducto().getPanelSuperior().limpiarCamposFormulario();
 	}
 
 	@Override
 	public void actionPerformed(ActionEvent e) {
 		String comando = e.getActionCommand();
 
-		if (comando.equals("BUSCAR_POR")) {
-			System.out.println(comando);
-		}
-
-		else if (comando.equals("BUSCAR")) {
-			System.out.println(comando);
+		if (comando.equals("BUSCAR")) {
+			reiniciarTabla();
+			filtarPorNombreCoincidencia();
 
 		} else if (comando.equals("FILTRO_POR")) {
-			System.out.println(comando);
+			reiniciarTabla();
+			vista.getVentanaPrincipal().getPanelBusqueda().getBuscarButton().setVisible(false);
 			String seleccion = vista.getVentanaPrincipal().getPanelBusqueda().getFiltroComboBox().getSelectedItem()
 					.toString();
+			
 			switch (seleccion) {
 			case "Tipo" -> {
 				vista.getVentanaPrincipal().getPanelBusqueda().mostrarFiltroPorTipo();
 				vista.getVentanaPrincipal().getPanelBusqueda().getTipoProductoFiltroComboBox().addActionListener(this);
 			}
-			case "Cantidad" -> vista.getVentanaPrincipal().getPanelBusqueda().mostrarFiltroPorCantidad();
-			case "Precio" -> vista.getVentanaPrincipal().getPanelBusqueda().mostrarFiltroPorPrecio();
-			default -> vista.getVentanaPrincipal().getPanelBusqueda().limpiarFiltroDinamico();
+			case "Cantidad" -> {
+				vista.getVentanaPrincipal().getPanelBusqueda().mostrarFiltroPorCantidad();
+				vista.getVentanaPrincipal().getPanelBusqueda().getFiltrarButton().addActionListener(this);
+
+				if (comando.equals("FILTRAR_BUTTON")) {
+					filtrarPorCantidad();
+				}
+			}
+			case "Precio" -> {
+				vista.getVentanaPrincipal().getPanelBusqueda().mostrarFiltroPorPrecio();
+				vista.getVentanaPrincipal().getPanelBusqueda().getFiltrarButton().addActionListener(this);
+
+				if (comando.equals("FILTRAR_BUTTON")) {
+					filtrarPorPrecio();
+				}
+			}
+			default -> {
+				reiniciarTabla();
+				vista.getVentanaPrincipal().getPanelBusqueda().limpiarFiltroDinamico();
+				vista.getVentanaPrincipal().getPanelBusqueda().getBuscarButton().setVisible(true);
+			}
 			}
 
 		} else if (comando.equals("FILTRO_TIPO")) {
-			System.out.println(comando);
+			filtrarPorTipo();
 
 		} else if (comando.equals("ELIMINAR_PRODUCTO")) {
 			System.out.println(comando);
 
 		} else if (comando.equals("CREAR_PRODUCTO")) {
 			vista.getVentanaProducto().setVisible(true);
+			reiniciarCamposEdicionCreacion();
 			System.out.println(comando);
 
 		} else if (comando.equals("CREAR")) {
@@ -106,7 +126,16 @@ public class Controlador implements ActionListener {
 	}
 
 	public void agregarProducto() {
-
+		String[] datos = vista.getVentanaProducto().getPanelSuperior().obtenerCamposFormulario();
+		String nombre = datos[0];
+		try {
+			double precioVenta = Double.parseDouble(datos[1]);
+			double costoProduccion = Double.parseDouble(datos[2]);
+			int cantidadField = Integer.parseInt(datos[3]);
+		} catch (NumberFormatException ex) {
+			vista.mostrarMensajeError("El valor del precio debe ser numerico.");
+		}
+		String tipo = datos[4];
 	}
 
 	public void editarProducto() {
@@ -117,20 +146,83 @@ public class Controlador implements ActionListener {
 
 	}
 
-	public void filtarPorNombreCoincidencia(String nombre) {
+	public void filtarPorNombreCoincidencia() {
+		String texto = obtenerTextoBusqueda();
+		int pos = vista.getVentanaPrincipal().getPanelBusqueda().getBuscarPorComboBox().getSelectedIndex();
+		String tipoBusqueda = vista.getVentanaPrincipal().getPanelBusqueda().getBuscarPorComboBox().getItemAt(pos)
+				.toLowerCase();
+		List<ProductoDTO> coincidencias = new ArrayList<ProductoDTO>();
 
+		if (tipoBusqueda == null || tipoBusqueda.isEmpty() || tipoBusqueda.equals("Seleccionar")) {
+			vista.mostrarMensajeError("Por favor seleccion un tipo de búsqueda.");
+
+		} else if (texto == null || texto.isEmpty()) {
+			vista.mostrarMensajeError("Por favor ingrese algo para buscar");
+
+		} else if (tipoBusqueda.equals("nombre")) {
+			String nombreBuscar = texto;
+			coincidencias = panaderia.filtrarPorNombre(nombreBuscar);
+
+			if (coincidencias.isEmpty()) {
+				vista.mostrarMensajeAdvertencia("No se encontró ningún producto.");
+			} else {
+				vista.getVentanaPrincipal().getPanelTabla().actualizarTabla(coincidencias);
+			}
+		}
 	}
 
 	public void filtrarPorNombreExacto(String nombre) {
 
 	}
 
-	public void filtrarPorCantidad(int cantidad) {
+	public void filtrarPorCantidad() {
+		String entrada = vista.getVentanaPrincipal().getPanelBusqueda().getCantidadMinimaField().getText();
+		int cantidad = Integer.parseInt(entrada);
+		List<ProductoDTO> coincidencias = panaderia.filtrarPorCantidad(cantidad);
 
+		if (coincidencias.isEmpty()) {
+			vista.mostrarMensajeAdvertencia("No se encontró ningun producto en ese rango de precios.");
+		} else {
+			vista.getVentanaPrincipal().getPanelTabla().actualizarTabla(coincidencias);
+		}
 	}
 
-	public void filtrarPorPrecio(double limInferior, double limSuperior) {
+	public void filtrarPorPrecio() {
+		String entradaInferior = vista.getVentanaPrincipal().getPanelBusqueda().getPrecioMinimoField().getText();
+		double precioMinimo = Double.parseDouble(entradaInferior);
+		String entradaSuperior = vista.getVentanaPrincipal().getPanelBusqueda().getPrecioMaximoField().getText();
+		double precioMaximo = Double.parseDouble(entradaSuperior);
+		List<ProductoDTO> datos = panaderia.filtrarPorPrecio(precioMinimo, precioMaximo);
+		vista.getVentanaPrincipal().getPanelTabla().actualizarTabla(datos);
+	}
 
+	public void filtrarPorTipo() {
+		String seleccion = vista.getVentanaPrincipal().getPanelBusqueda().getFiltroComboBox().getSelectedItem()
+				.toString();
+
+		switch (seleccion) {
+		case "Pan" -> {
+			try {
+				List<ProductoDTO> coincidencias = panaderia.filtrarPorTipo(seleccion);
+				vista.getVentanaPrincipal().getPanelTabla().actualizarTabla(coincidencias);
+			} catch (TipoProductoInvalidoException e1) {
+				vista.mostrarMensajeError(e1.getMessage());
+			}
+		}
+		case "Galleta" -> {
+			try {
+				List<ProductoDTO> coincidencias = panaderia.filtrarPorTipo(seleccion);
+				vista.getVentanaPrincipal().getPanelTabla().actualizarTabla(coincidencias);
+			} catch (TipoProductoInvalidoException e1) {
+				vista.mostrarMensajeError(e1.getMessage());
+			}
+		}
+
+		default -> {
+			reiniciarTabla();
+			vista.mostrarMensajeError("Opcion no válida");
+		}
+		}
 	}
 
 	public void guardarProducto() {

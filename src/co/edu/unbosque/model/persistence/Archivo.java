@@ -31,16 +31,12 @@ public class Archivo {
 	public void guardar(List<Producto> productos) throws AccesoDatosException {
 		try {
 			salida = new ObjectOutputStream(new FileOutputStream(ubicacionArchivo));
-			List<ProductoDTO> datos = new ArrayList<ProductoDTO>();
-			for (Producto p : productos) {
-				datos.add(MapHandler.productoADTO(p));
-			}
+			List<ProductoDTO> datos = MapHandler.todosProductoADTO(productos);
 			salida.writeObject(datos);
 			salida.close();
 		} catch (IOException e) {
 			throw new AccesoDatosException("Error al escribir en el archivo de datos.", e);
 		}
-
 	}
 
 	public List<Producto> cargar() throws AccesoDatosException, ClassNotFoundException, TipoProductoInvalidoException {
@@ -53,10 +49,7 @@ public class Archivo {
 			@SuppressWarnings("unchecked")
 			List<ProductoDTO> datos = (List<ProductoDTO>) entrada.readObject();
 			entrada.close();
-			List<Producto> datosSalida = new ArrayList<Producto>();
-			for (ProductoDTO p : datos) {
-				datosSalida.add(MapHandler.dtoAProducto(p));
-			}
+			List<Producto> datosSalida = MapHandler.todosDtoAProducto(datos);
 			return datosSalida;
 		} catch (IOException | ClassNotFoundException ex) {
 			throw new AccesoDatosException("Error al leer el archivo de datos", ex);
