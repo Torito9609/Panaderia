@@ -1,5 +1,8 @@
 package co.edu.unbosque.model.persistence;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import co.edu.unbosque.model.dto.ProductoDTO;
 import co.edu.unbosque.model.entity.Galleta;
 import co.edu.unbosque.model.entity.Pan;
@@ -25,6 +28,14 @@ public class MapHandler {
 
 		return dto;
 	}
+	
+	public static List<ProductoDTO> todosProductoADTO(List<Producto> productos){
+		List<ProductoDTO> productosDTO = new ArrayList<ProductoDTO>();
+		for(Producto p : productos) {
+			productosDTO.add(productoADTO(p));
+		}
+		return productosDTO;
+	}
 
 	public static Producto dtoAProducto(ProductoDTO productoDTO) throws TipoProductoInvalidoException {
 		String tipo = productoDTO.getTipo();
@@ -39,5 +50,13 @@ public class MapHandler {
 		default:
 			throw new TipoProductoInvalidoException("Tipo de producto inválido: " + tipo);
 		}
+	}
+	
+	public static List<Producto> todosDtoAProducto(List<ProductoDTO> productosDTO) throws TipoProductoInvalidoException{
+		List<Producto> productos = new ArrayList<Producto>();
+		for(ProductoDTO p : productosDTO) {
+			productos.add(dtoAProducto(p));
+		}
+		return productos;
 	}
 }

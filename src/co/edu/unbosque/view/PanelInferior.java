@@ -5,7 +5,7 @@ import java.awt.*;
 
 public class PanelInferior extends JPanel {
 
-	private JButton crearButton, editarButton, eliminarButton;
+	private JButton crearButton, editarButton, eliminarButton, exportarCsvButton;
 
 	public PanelInferior() {
 		setLayout(new FlowLayout(FlowLayout.RIGHT, 10, 10));
@@ -26,6 +26,10 @@ public class PanelInferior extends JPanel {
 		eliminarButton = new JButton("Eliminar producto");
 		eliminarButton.setActionCommand("ELIMINAR_PRODUCTO");
 		add(eliminarButton);
+
+		exportarCsvButton = new JButton("Exportar datos a CSV");
+		exportarCsvButton.setActionCommand("EXPORTAR_CSV");
+		add(exportarCsvButton);
 
 	}
 
@@ -51,6 +55,14 @@ public class PanelInferior extends JPanel {
 
 	public void setEliminarButton(JButton eliminarButton) {
 		this.eliminarButton = eliminarButton;
+	}
+
+	public JButton getExportarCsvButton() {
+		return exportarCsvButton;
+	}
+
+	public void setExportarCsvButton(JButton exportarCsvButton) {
+		this.exportarCsvButton = exportarCsvButton;
 	}
 
 }

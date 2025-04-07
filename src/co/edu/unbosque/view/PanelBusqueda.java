@@ -18,7 +18,7 @@ public class PanelBusqueda extends JPanel {
     }
 
     private void inicializarComponentes() {
-        buscarPorComboBox = new JComboBox<>(new String[]{"Nombre"});
+        buscarPorComboBox = new JComboBox<>(new String[]{"Seleccionar", "Nombre"});
         buscarPorComboBox.setActionCommand("BUSCAR_POR");
 
         buscarTextField = new JTextField(20);
